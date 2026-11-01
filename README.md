@@ -55,8 +55,6 @@ php bin/console doctrine:fixtures:load
 - Equipe **1—N** Inscription *(membres de l'équipe, table `Regrouper`)*
 - Inscription **1—N** Equipe *(inscription qui a créé l'équipe)*
 
-```
-
 # TP 2 - Application Web : Response HTTP en mode Client/Serveur
 
 ## Prérequis
