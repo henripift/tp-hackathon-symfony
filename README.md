@@ -56,3 +56,32 @@ php bin/console doctrine:fixtures:load
 - Inscription **1—N** Equipe *(inscription qui a créé l'équipe)*
 
 ```
+
+# TP 2 - Application Web : Response HTTP en mode Client/Serveur
+
+## Prérequis
+- PHP 8.4, Composer
+- MySQL 8.4, Doctrine ORM 3
+
+## Commande de base pour gérer la logique applicative
+Composants intervenant dans le cycle de vie d'une requête/réponse HTTP :
+**Request** (navigateur) → **Routeur** (`#[Route]`) → **Controller** (`HackathonController`) → **Repository** Doctrine (`findAll()`) → **Response** (HTML ou JSON) renvoyée au client.
+
+```bash
+php bin/console make:controller Hackathon   # création du contrôleur
+php bin/console debug:router                # vérification des routes
+php -S localhost:8000 -t public             # lancement du serveur
+```
+
+| Version | Route | Méthode du contrôleur | Réponse |
+|---|---|---|---|
+| 1 – HTML | `GET /hackathons` | `index()` | `new Response($html)` |
+| 2 – JSON | `GET /hackathons/json` | `indexJson()` | `$this->json($hackathons)` |
+
+## Test d'interrogation de l'application web :
+URL requêtée :
+
+```bash
+http://localhost:8000/hackathons
+http://localhost:8000/hackathons/json
+```
