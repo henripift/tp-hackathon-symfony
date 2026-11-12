@@ -15,73 +15,66 @@ class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        // Hackathons
-        $hackathons = [
-            ['2026-11-14 09:00', '2026-11-15 18:00', 'Cité des Congrès', 'Nantes', 'IA et santé'],
-            ['2026-12-05 08:30', '2026-12-06 17:00', 'Epitech', 'Rennes', 'Ville durable'],
-            ['2027-02-20 10:00', '2027-02-21 16:00', 'Station F', 'Paris', 'Cybersécurité'],
-        ];
-        foreach ($hackathons as [$debut, $fin, $lieu, $ville, $theme]) {
-            $manager->persist((new Hackathon())
-                ->setDateHeureDebut(new \DateTimeImmutable($debut))
-                ->setDateHeureFin(new \DateTimeImmutable($fin))
-                ->setLieu($lieu)
-                ->setVille($ville)
-                ->setTheme($theme));
+        // Organisateurs
+
+        for ($i = 0; $i < 3; $i++) {
+            $orga = new Organisateur();
+            $orga->setStatut("Statut $i");
+            $orga->setNom("Organisateur $i");
+            $orga->setSiteweb("https://organisateur$i.example");
+            $orga->setEmail("organisateur$i@organisateur$i");
+            $manager->persist($orga);
+
+            $this->addReference("organisateur_".$i, $orga);
         }
 
-        // Organisateurs
-        $organisateurs = [
-            ['Association', 'Nantes Tech', 'https://nantestech.example', 'contact@nantestech.example'],
-            ['Entreprise', 'CodeFactory', 'https://codefactory.example', 'hello@codefactory.example'],
-            ['École', 'Lycée La Colinière', null, 'bts@coliniere.example'],
-        ];
-        foreach ($organisateurs as [$statut, $nom, $site, $email]) {
-            $manager->persist((new Organisateur())
-                ->setStatut($statut)
-                ->setNom($nom)
-                ->setSiteweb($site)
-                ->setEmail($email));
+
+        // Hackathons
+
+        for ($i = 0; $i < 3; $i++) {
+            $hack = new Hackathon();
+            $hack->setDateHeureDebut(new \DateTimeImmutable('now'));
+            $hack->setDateHeureFin(new \DateTimeImmutable('now'));
+            $hack->setLieu("Lieu $i");
+            $hack->setVille("Ville $i");
+            $hack->setTheme("Theme $i");
+            $orgaId = random_int(0, 2);
+            $orga = $this->getReference('organisateur_'.$orgaId, Organisateur::class);
+
+            $hack->setOrganisateur($orga);
+            $this->addReference("hackathon_".$i, $hack);
+            $manager->persist($hack);
         }
 
         // Projets
-        $projets = [
-            ['Application de suivi des rendez-vous médicaux', true],
-            ['Chatbot d\'orientation pour les urgences', false],
-            ['Carte interactive des pistes cyclables', true],
-            ['Détecteur de phishing pour emails', false],
-        ];
-        foreach ($projets as [$description, $retenu]) {
-            $manager->persist((new Projet())
-                ->setDescription($description)
-                ->setRetenu($retenu));
+
+        for ($i = 0; $i < 3; $i++) {
+            $projet = new Projet();
+            $projet->setDescription("description projet $i");
+            $projet->setRetenu("retenu projet $i");
+            $hackId = random_int(0, 2);
+            $hack = $this->getReference('hackathon_'.$hackId, Hackathon::class);
+            $projet->setHackathon($hack);
         }
 
         // Participants
-        $participants = [
-            ['Martin', 'Lucas', 'lucas.martin@mail.example', '0601020304', '2004-03-12', 'https://lucas-martin.example'],
-            ['Bernard', 'Emma', 'emma.bernard@mail.example', '0611223344', '2005-07-25', null],
-            ['Dubois', 'Hugo', 'hugo.dubois@mail.example', null, '2003-11-02', 'https://hugodubois.example'],
-            ['Leroy', 'Chloé', 'chloe.leroy@mail.example', '0699887766', '2006-01-18', null],
-            ['Moreau', 'Nathan', 'nathan.moreau@mail.example', '0655443322', '2004-09-30', null],
-        ];
-        foreach ($participants as [$nom, $prenom, $email, $tel, $naissance, $portfolio]) {
-            $manager->persist((new Participant())
-                ->setNom($nom)
-                ->setPrenom($prenom)
-                ->setEmail($email)
-                ->setTelephone($tel)
-                ->setDateNaissance(new \DateTimeImmutable($naissance))
-                ->setLienPortefolio($portfolio));
+        for ($i = 0; $i < 3; $i++) {
+            $participant = new Participant();
+            $participant->setEmail("participant$i@participant$i");
+            $participant->setNom("participant$i");
+            $participant->setPrenom("participant$i");
+            $participant->setTelephone("participant$i");
+            $participant->setDateNaissance(new \DateTimeImmutable('now'));
+            $participant->setLienPortefolio("participant$i");
         }
-
         // Inscriptions
-        $competences = ['PHP / Symfony', 'Design UI', 'Python / IA', 'Gestion de projet', 'Réseau'];
-        foreach ($competences as $i => $competence) {
-            $manager->persist((new Inscription())
-                ->setNum($i + 1)
-                ->setDate(new \DateTimeImmutable('2026-10-'.(10 + $i)))
-                ->setCompetence($competence));
+        for ($i = 0; $i < 3; $i++) {
+            $inscription = new Inscription();
+            $inscription->setCompetence("competence $i");
+            $inscription->setDate(new \DateTimeImmutable('now'));
+            $hackId = random_int(0, 2);
+            $hack = $this->getReference('hackathon_'.$hackId, Hackathon::class);
+            $inscription->setHackathon($hack);
         }
 
         // Équipes

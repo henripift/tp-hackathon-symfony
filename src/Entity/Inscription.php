@@ -23,6 +23,16 @@ class Inscription
     #[ORM\Column(type: Types::STRING, length: 100)]
     private ?string $competence = null;
 
+    #[ORM\ManyToOne(inversedBy: 'inscriptions')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Hackathon $hackathon = null;
+
+    #[ORM\ManyToOne(inversedBy: 'inscriptions')]
+    private ?Participant $participant = null;
+
+    #[ORM\OneToOne(mappedBy: 'responsable', cascade: ['persist', 'remove'])]
+    private ?Equipe $equipe = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -60,6 +70,52 @@ class Inscription
     public function setCompetence(string $competence): static
     {
         $this->competence = $competence;
+
+        return $this;
+    }
+
+    public function getHackathon(): ?Hackathon
+    {
+        return $this->hackathon;
+    }
+
+    public function setHackathon(?Hackathon $hackathon): static
+    {
+        $this->hackathon = $hackathon;
+
+        return $this;
+    }
+
+    public function getParticipant(): ?Participant
+    {
+        return $this->participant;
+    }
+
+    public function setParticipant(?Participant $participant): static
+    {
+        $this->participant = $participant;
+
+        return $this;
+    }
+
+    public function getEquipe(): ?Equipe
+    {
+        return $this->equipe;
+    }
+
+    public function setEquipe(?Equipe $equipe): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($equipe === null && $this->equipe !== null) {
+            $this->equipe->setResponsable(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($equipe !== null && $equipe->getResponsable() !== $this) {
+            $equipe->setResponsable($this);
+        }
+
+        $this->equipe = $equipe;
 
         return $this;
     }
