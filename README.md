@@ -122,3 +122,60 @@ Résultat (extrait) :
 ## Difficultés rencontrées
 - Oubli du `use ...\JsonResponse` pour la version JSON : la classe n'était pas trouvée.
 - La route `/hackathons/json` renvoyait une erreur 404 : le cache n'avait pas pris la nouvelle route en compte, réglé avec `cache:clear` et vérifié avec `debug:router`.
+
+# TP 2 - Application Web : Response HTTP en mode Client/Serveur
+
+## Prérequis
+- PHP 8.4, Composer
+- MySQL 8.4, Doctrine ORM 3
+
+## Ajout des nouvelles relations entre les tables
+En utilsant `make:entity` permettant de rajouter les différentes relations.
+
+
+| Relations | Tables concernées |
+| --- | --- |
+| hackathon, projets | Hackathon 1 - N projet |
+| hackathons, organisateur | Hackathon N - 1 organisateur |
+| inscriptions, participant | Inscription N - 1 Participant |
+| projet, equipes | Projet 1 - N Equipe |
+
+## Ajout de dépendances
+Ajout de addReference à la création d'object dans `AppFixtures.php`.
+
+Exemples : 
+```
+// Organisateurs
+
+        for ($i = 0; $i < 3; $i++) {
+            $orga = new Organisateur();
+            $orga->setStatut("Statut $i");
+            $orga->setNom("Organisateur $i");
+            $orga->setSiteweb("https://organisateur$i.example");
+            $orga->setEmail("organisateur$i@organisateur$i");
+            $manager->persist($orga);
+
+            $this->addReference("organisateur_".$i, $orga);
+        }
+```
+```
+ // Hackathons
+
+        for ($i = 0; $i < 3; $i++) {
+            $hack = new Hackathon();
+            $hack->setDateHeureDebut(new \DateTimeImmutable('now'));
+            $hack->setDateHeureFin(new \DateTimeImmutable('now'));
+            $hack->setLieu("Lieu $i");
+            $hack->setVille("Ville $i");
+            $hack->setTheme("Theme $i");
+            $orgaId = random_int(0, 2);
+            $orga = $this->getReference('organisateur_'.$orgaId, Organisateur::class);
+
+            $hack->setOrganisateur($orga);
+            $this->addReference("hackathon_".$i, $hack);
+            $manager->persist($hack);
+        }
+```
+
+## Difficultés rencontrées
+Après avoir ajouté les différentes relations dans la première partie de mon TP, j'ai oublié de faire `make:migration`. Faisant ainsi planter mon `doctrine:fixtures:load`.
