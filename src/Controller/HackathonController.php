@@ -36,12 +36,13 @@ final class HackathonController extends AbstractController
     }
 
     // Version 2 : liste des hackathons au format JSON
-    #[Route('/hackathons/json', name: 'app_hackathon_json', methods: ['GET'])]
+    #[Route('/hackathons/api', name: 'app_hackathon_json', methods: ['GET'])]
     public function indexJson(HackathonRepository $hackathonRepository): JsonResponse
     {
         $hackathons = $hackathonRepository->findAll();
 
         // json() transforme les objets en JSON et renvoie une JsonResponse
-        return $this->json($hackathons);
+        return $this->json($hackathons, 200, [], ['groups' => ['hackathon:read']]);
     }
+
 }

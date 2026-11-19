@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: HackathonRepository::class)]
 class Hackathon
@@ -14,25 +15,32 @@ class Hackathon
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['hackathon:read'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[Groups(['hackathon:read'])]
     private ?\DateTimeImmutable $dateHeureDebut = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[Groups(['hackathon:read'])]
     private ?\DateTimeImmutable $dateHeureFin = null;
 
     #[ORM\Column(type: Types::STRING, length: 100)]
+    #[Groups(['hackathon:read'])]
     private ?string $lieu = null;
 
     #[ORM\Column(type: Types::STRING, length: 50)]
+    #[Groups(['hackathon:read'])]
     private ?string $ville = null;
 
     #[ORM\Column(type: Types::STRING, length: 100)]
+    #[Groups(['hackathon:read'])]
     private ?string $theme = null;
 
     #[ORM\ManyToOne(inversedBy: 'hackathons')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['hackathon:read'])]
     private ?Organisateur $organisateur = null;
 
     /**
@@ -49,10 +57,8 @@ class Hackathon
 
     public function __construct()
     {
-        $this->projet = new ArrayCollection();
-        $this->inscription = new ArrayCollection();
-        $this->inscriptions = new ArrayCollection();
         $this->projets = new ArrayCollection();
+        $this->inscriptions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -116,6 +122,7 @@ class Hackathon
     public function setTheme(string $theme): static
     {
         $this->theme = $theme;
+
         return $this;
     }
 
@@ -127,66 +134,6 @@ class Hackathon
     public function setOrganisateur(?Organisateur $organisateur): static
     {
         $this->organisateur = $organisateur;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Projet>
-     */
-    public function getProjet(): Collection
-    {
-        return $this->projet;
-    }
-
-    public function addProjet(Projet $projet): static
-    {
-        if (!$this->projet->contains($projet)) {
-            $this->projet->add($projet);
-            $projet->setInscription($this);
-        }
-
-        return $this;
-    }
-
-    public function removeProjet(Projet $projet): static
-    {
-        if ($this->projet->removeElement($projet)) {
-            // set the owning side to null (unless already changed)
-            if ($projet->getInscription() === $this) {
-                $projet->setInscription(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Inscription>
-     */
-    public function getInscription(): Collection
-    {
-        return $this->inscription;
-    }
-
-    public function addInscription(Inscription $inscription): static
-    {
-        if (!$this->inscription->contains($inscription)) {
-            $this->inscription->add($inscription);
-            $inscription->setHackathon($this);
-        }
-
-        return $this;
-    }
-
-    public function removeInscription(Inscription $inscription): static
-    {
-        if ($this->inscription->removeElement($inscription)) {
-            // set the owning side to null (unless already changed)
-            if ($inscription->getHackathon() === $this) {
-                $inscription->setHackathon(null);
-            }
-        }
 
         return $this;
     }

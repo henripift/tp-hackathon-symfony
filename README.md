@@ -128,6 +128,7 @@ Résultat (extrait) :
 ## Prérequis
 - PHP 8.4, Composer
 - MySQL 8.4, Doctrine ORM 3
+- Symfony CLI
 
 ## Ajout des nouvelles relations entre les tables
 En utilsant `make:entity` permettant de rajouter les différentes relations.
@@ -144,7 +145,7 @@ En utilsant `make:entity` permettant de rajouter les différentes relations.
 Ajout de addReference à la création d'object dans `AppFixtures.php`.
 
 Exemples : 
-```
+```php
 // Organisateurs
 
         for ($i = 0; $i < 3; $i++) {
@@ -158,7 +159,7 @@ Exemples :
             $this->addReference("organisateur_".$i, $orga);
         }
 ```
-```
+```php
  // Hackathons
 
         for ($i = 0; $i < 3; $i++) {
