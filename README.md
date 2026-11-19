@@ -123,7 +123,7 @@ Résultat (extrait) :
 - Oubli du `use ...\JsonResponse` pour la version JSON : la classe n'était pas trouvée.
 - La route `/hackathons/json` renvoyait une erreur 404 : le cache n'avait pas pris la nouvelle route en compte, réglé avec `cache:clear` et vérifié avec `debug:router`.
 
-# TP 2 - Application Web : Response HTTP en mode Client/Serveur
+# TP3 : Définition des relations entre les entités
 
 ## Prérequis
 - PHP 8.4, Composer
@@ -180,3 +180,9 @@ Exemples :
 
 ## Difficultés rencontrées
 Après avoir ajouté les différentes relations dans la première partie de mon TP, j'ai oublié de faire `make:migration`. Faisant ainsi planter mon `doctrine:fixtures:load`.
+
+
+# TP 4 : API – Méthodes GET et sérialisation des objets
+
+## Difficultés rencontrées
+Après l'ajout des relations entre les tables, des références circulaires se sont créées, ce qui bloquait l'affichage en JSON des entités. Pour pallier à cela, il était nécessaire d'utiliser les groupes avec Sérialiseur. Il a fallu installer le composer : `composer require symfony/serializer-pack` et l'ajout de `#[Groups(['hackathon:read'])]` dans les entités *Hackathon* et *Organisateur*.

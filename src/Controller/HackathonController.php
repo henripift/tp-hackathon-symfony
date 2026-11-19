@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Controller;
-
+use App\Entity\Hackathon;
 use App\Repository\HackathonRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -44,5 +44,19 @@ final class HackathonController extends AbstractController
         // json() transforme les objets en JSON et renvoie une JsonResponse
         return $this->json($hackathons, 200, [], ['groups' => ['hackathon:read']]);
     }
+
+    #[Route('/hackathons/api/{id}', name: 'app_hackathon_show_json', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function showJson(?Hackathon $hackathon = null): JsonResponse
+    {
+        if (!$hackathon) {
+            return $this->json(
+                ['error' => 'Hackathon introuvable'],
+                404
+            );
+        }
+
+        return $this->json($hackathon, 200, [], ['groups' => ['hackathon:read']]);
+    }
+
 
 }
