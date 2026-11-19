@@ -184,5 +184,75 @@ Après avoir ajouté les différentes relations dans la première partie de mon 
 
 # TP 4 : API – Méthodes GET et sérialisation des objets
 
+
+## Personnalisation de la sérialisation
+*Exemple :*
+
+```php
+#[Groups(['hackathon:read'])]
+    private ?int $id = null;
+```
+### Entités gérées
+| Entité | Groupe(s) | Attributs exposés | Relations exposées |
+|---|---|---|---|
+| Hackathon | `hackathon:read` | id, dateHeureDebut, dateHeureFin, lieu, ville, theme, organisateur, projets, inscription | Organisateur(id, statut, nom, email, siteweb, hackathon)  |
+| Organisateur | `organisateur:read` | Organisateur(id, statut, nom, email, siteweb, hackathon) | [] |
+
+## Les GET API
+
+## Endpoints GET
+
+| Méthode | URL | Description | Groupe | Codes retour |
+|---|---|---|---|---|
+| GET | `/api/hackathons` | Liste des hackathons | `hackathon:read` | 200 |
+| GET | `/api/hackathons/{id}` | Détail d'un hackathon | `hackathon:read` | 200 / 404 |
+
+Extrait de contrôleur :
+
+```php
+#[Route('/hackathons/api/{id}', name: 'app_hackathon_show_json', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function showJson(?Hackathon $hackathon = null): JsonResponse
+    {
+        if (!$hackathon) {
+            return $this->json(
+                ['error' => 'Hackathon introuvable'],
+                404
+            );
+        }
+
+        return $this->json($hackathon, 200, [], ['groups' => ['hackathon:read']]);
+    }
+```
+
+
+
+Résultat (extrait) :
+```json
+{
+	"id": 28,
+	"dateHeureDebut": "2026-11-12T09:21:06+00:00",
+	"dateHeureFin": "2026-11-12T09:21:06+00:00",
+	"lieu": "Lieu 0",
+	"ville": "Ville 0",
+	"theme": "Theme 0",
+	"organisateur": {
+		"id": 30,
+		"statut": "Statut 2",
+		"nom": "Organisateur 2",
+		"siteweb": "https://organisateur2.example",
+		"email": "organisateur2@organisateur2"
+	}
+}
+```
+
+Test d'un cas d'erreur (ex. `GET /api/hackathons/9999` → 404) :
+
+```json
+{
+	"error": "Hackathon introuvable"
+}
+```
+
+
 ## Difficultés rencontrées
 Après l'ajout des relations entre les tables, des références circulaires se sont créées, ce qui bloquait l'affichage en JSON des entités. Pour pallier à cela, il était nécessaire d'utiliser les groupes avec Sérialiseur. Il a fallu installer le composer : `composer require symfony/serializer-pack` et l'ajout de `#[Groups(['hackathon:read'])]` dans les entités *Hackathon* et *Organisateur*.
