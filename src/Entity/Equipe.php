@@ -7,7 +7,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Persistence\ObjectManager;
 
 #[ORM\Entity(repositoryClass: EquipeRepository::class)]
 class Equipe
@@ -26,10 +25,13 @@ class Equipe
     #[ORM\ManyToOne(inversedBy: 'equipes')]
     private ?Projet $projet = null;
 
-    #[ORM\OneToOne(inversedBy: 'equipe', cascade: ['persist', 'remove'])]
+    // Responsable de l'équipe (côté propriétaire, colonne responsable_id)
+    #[ORM\OneToOne(inversedBy: 'equipeResponsable')]
     private ?Inscription $responsable = null;
 
     /**
+     * Membres de l'équipe
+     *
      * @var Collection<int, Inscription>
      */
     #[ORM\OneToMany(targetEntity: Inscription::class, mappedBy: 'equipe')]
@@ -39,7 +41,6 @@ class Equipe
     {
         $this->regrouper = new ArrayCollection();
     }
-
 
     public function getId(): ?int
     {
@@ -82,12 +83,12 @@ class Equipe
         return $this;
     }
 
-    public function getResponsable(): ?self
+    public function getResponsable(): ?Inscription
     {
         return $this->responsable;
     }
 
-    public function setResponsable(?self $responsable): static
+    public function setResponsable(?Inscription $responsable): static
     {
         $this->responsable = $responsable;
 
@@ -123,6 +124,4 @@ class Equipe
 
         return $this;
     }
-
-
 }

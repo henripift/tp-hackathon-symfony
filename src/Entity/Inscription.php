@@ -30,8 +30,13 @@ class Inscription
     #[ORM\ManyToOne(inversedBy: 'inscriptions')]
     private ?Participant $participant = null;
 
-    #[ORM\OneToOne(mappedBy: 'responsable', cascade: ['persist', 'remove'])]
+    // Équipe dont l'inscrit est membre (liée à Equipe::$regrouper)
+    #[ORM\ManyToOne(inversedBy: 'regrouper')]
     private ?Equipe $equipe = null;
+
+    // Équipe dont l'inscrit est le responsable (liée à Equipe::$responsable)
+    #[ORM\OneToOne(mappedBy: 'responsable')]
+    private ?Equipe $equipeResponsable = null;
 
     public function getId(): ?int
     {
@@ -105,9 +110,21 @@ class Inscription
 
     public function setEquipe(?Equipe $equipe): static
     {
+        $this->equipe = $equipe;
+
+        return $this;
+    }
+
+    public function getEquipeResponsable(): ?Equipe
+    {
+        return $this->equipeResponsable;
+    }
+
+    public function setEquipeResponsable(?Equipe $equipe): static
+    {
         // unset the owning side of the relation if necessary
-        if ($equipe === null && $this->equipe !== null) {
-            $this->equipe->setResponsable(null);
+        if ($equipe === null && $this->equipeResponsable !== null) {
+            $this->equipeResponsable->setResponsable(null);
         }
 
         // set the owning side of the relation if necessary
@@ -115,7 +132,7 @@ class Inscription
             $equipe->setResponsable($this);
         }
 
-        $this->equipe = $equipe;
+        $this->equipeResponsable = $equipe;
 
         return $this;
     }

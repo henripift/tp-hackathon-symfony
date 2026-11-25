@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hackathon {{ hackathon.id }}{% endblock %}
+
+{% block body %}
+    <h1>Hackathon {{ hackathon.id }}</h1>
+    <p>Thème : {{ hackathon.theme }}</p>
+    <p>Début : {{ hackathon.dateHeureDebut|date('d/m/Y à H:i') }}</p>
+    <p>Fin : {{ hackathon.dateHeureFin|date('d/m/Y à H:i') }}</p>
+    <p>Aura lieu au {{ hackathon.lieu }} à {{ hackathon.ville }}</p>
+
+    <h2>Participants</h2>
+    <ul>
+        {% for inscription in hackathon.inscriptions %}
+            <li>
+                {{ inscription.participant.nom }} {{ inscription.participant.prenom }},
+                né le {{ inscription.participant.dateNaissance|date('d/m/Y') }} :
+                <a href="https://{{ inscription.participant.lienPortefolio }}" target="_blank">
+                    {{ inscription.participant.lienPortefolio }}
+                </a>
+            </li>
+        {% else %}
+            <li>Aucun participant inscrit.</li>
+        {% endfor %}
+    </ul>
+    <h2>Les équipes</h2>
+    {% set equipes = [] %}
+    {% set inscris = [] %}
+    {% for inscription in hackathon.inscriptions %}
+        {% set equipes = equipes|merge([inscription.equipe.id]) %}
+    {% endfor %}
+    {% for inscription in hackathon.inscriptions %}
+        {% set equipes = inscris|merge([inscription.id]) %}
+    {% endfor %}
+{% endblock %}

@@ -8,31 +8,20 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+
 final class HackathonController extends AbstractController
 {
     // Version 1 : liste des hackathons au format HTML
+
     #[Route('/hackathons', name: 'app_hackathon_index', methods: ['GET'])]
     public function index(HackathonRepository $hackathonRepository): Response
     {
-        // Récupération de tous les enregistrements de la table hackathon
         $hackathons = $hackathonRepository->findAll();
 
-        // Construction du HTML de la réponse
-        $html = '<h1>Liste des hackathons</h1><ul>';
-        foreach ($hackathons as $hackathon) {
-            $html .= '<li>'
-                . $hackathon->getId() . ' - '
-                . $hackathon->getDateHeureDebut()->format('d/m/Y H:i') . ' au '
-                . $hackathon->getDateHeureFin()->format('d/m/Y H:i') . ' - '
-                . htmlspecialchars($hackathon->getLieu()) . ', '
-                . htmlspecialchars($hackathon->getVille()) . ' - '
-                . htmlspecialchars($hackathon->getTheme())
-                . '</li>';
-        }
-        $html .= '</ul>';
-
-        // Le serveur renvoie la réponse HTTP au client
-        return new Response($html);
+        // render() génère le HTML à partir du template Twig
+        return $this->render('hackathon/index.html.twig', [
+            'hackathons' => $hackathons,
+        ]);
     }
 
     // Version 2 : liste des hackathons au format JSON
@@ -56,6 +45,18 @@ final class HackathonController extends AbstractController
         }
 
         return $this->json($hackathon, 200, [], ['groups' => ['hackathon:read']]);
+    }
+
+    #[Route('/hackathon/{id}', name: 'app_hackathon_show', requirements: ['id' => '\d+'])]
+    public function show(int $id, HackathonRepository $repo): Response
+    {
+        $hackathon = $repo->findWithInscriptions($id);
+
+        if (!$hackathon) {
+            throw $this->createNotFoundException('Hackathon introuvable');
+        }
+
+        return $this->render('hackathon/show.html.twig', ['hackathon' => $hackathon]);
     }
 
 

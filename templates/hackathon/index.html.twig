@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des hackathons{% endblock %}
+
+{% block body %}
+    <h1>Liste des hackathons</h1>
+    {% if hackathons is empty %}
+        <p>Aucun hackathon pour le moment.</p>
+    {% else %}
+        <table>
+            <thead>
+            <tr>
+                <th>Titre</th>
+                <th>Date de début</th>
+                <th>Lieu</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for hackathon in hackathons %}
+                <tr>
+                    <td>{{ hackathon.theme }}</td>
+                    <td>{{ hackathon.dateHeureDebut|date() }}</td>
+                    <td>{{ hackathon.lieu }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    {% for hackathon in hackathons %}
+    <td><a href="{{ path('app_hackathon_show', {id: hackathon.id}) }}">Hackathon {{ hackathon.id }}</a></td>
+    {% endfor %}
+{% endblock %}
